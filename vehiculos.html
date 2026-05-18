@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehículos de Ocasión — Autosucro</title>
+  <meta name="description" content="Catálogo completo de vehículos seminuevos y de ocasión en Autosucro. Revisados con garantía de 12 meses.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+<div id="header-container"></div>
+
+<div class="page-hero" data-text="VEHÍCULOS">
+  <div class="page-hero-inner">
+    <p class="page-hero-eyebrow">Catálogo completo</p>
+    <h1 class="page-hero-title">Vehículos de <em>ocasión</em></h1>
+  </div>
+</div>
+
+<section class="catalog-section">
+  <div class="catalog-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="catalog-sidebar">
+      <div class="sidebar-filters">
+
+        <div class="sf-header">
+          <p class="sf-title">Filtros</p>
+          <button class="sf-reset" id="filterReset">Limpiar</button>
+        </div>
+
+        <!-- Search -->
+        <div class="sf-search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" class="sf-search" id="searchInput" placeholder="Marca o modelo…">
+        </div>
+
+        <!-- Estado -->
+        <div class="sf-group">
+          <p class="sf-label">Estado</p>
+          <div class="sf-chips" id="chipsStatus">
+            <button class="sf-chip sf-chip-active" data-val="">Todos</button>
+            <button class="sf-chip" data-val="available">Disponibles</button>
+            <button class="sf-chip" data-val="sold">Vendidos</button>
+          </div>
+        </div>
+
+        <!-- Combustible -->
+        <div class="sf-group">
+          <p class="sf-label">Combustible</p>
+          <div class="sf-chips" id="chipsFuel">
+            <button class="sf-chip sf-chip-active" data-val="">Todos</button>
+            <button class="sf-chip" data-val="Gasolina">Gasolina</button>
+            <button class="sf-chip" data-val="Diesel">Diesel</button>
+            <button class="sf-chip" data-val="Híbrido">Híbrido</button>
+            <button class="sf-chip" data-val="Eléctrico">Eléctrico</button>
+          </div>
+        </div>
+
+        <!-- Cambio -->
+        <div class="sf-group">
+          <p class="sf-label">Cambio</p>
+          <div class="sf-chips" id="chipsTransmission">
+            <button class="sf-chip sf-chip-active" data-val="">Todos</button>
+            <button class="sf-chip" data-val="Manual">Manual</button>
+            <button class="sf-chip" data-val="Automático">Automático</button>
+          </div>
+        </div>
+
+        <!-- Precio -->
+        <div class="sf-group">
+          <div class="sf-price-header">
+            <p class="sf-label">Precio máximo</p>
+            <span class="sf-price-val" id="priceDisplay">Sin límite</span>
+          </div>
+          <div class="sf-range-wrap">
+            <input type="range" class="sf-range" id="filterPrice" min="0" max="80000" step="500" value="80000">
+            <div class="sf-range-track" id="rangeTrack"></div>
+          </div>
+          <div class="sf-range-labels">
+            <span>0 €</span>
+            <span>80.000 €</span>
+          </div>
+        </div>
+
+        <!-- Marca -->
+        <div class="sf-group">
+          <p class="sf-label">Marca</p>
+          <div class="sf-chips sf-chips-wrap" id="chipsBrand"></div>
+        </div>
+
+        <div class="sf-count-wrap">
+          <span class="sf-count" id="filterCount"></span>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- GRID -->
+    <div class="catalog-content">
+      <div class="vehicles-grid" id="vehiclesGrid"></div>
+    </div>
+
+  </div>
+</section>
+
+<div class="modal-overlay" id="vehicleModal" onclick="if(event.target===this)closeVehicleModal()">
+  <div class="modal" id="vehicleModalContent"></div>
+</div>
+
+<div id="footer-container"></div>
+<script src="js/vehicles-data.js"></script>
+<script src="js/components.js"></script>
+<script>
+  document.getElementById('header-container').innerHTML = renderHeader('Vehículos');
+  document.getElementById('footer-container').innerHTML = renderFooter();
+  initMobileNav();
+
+  // State
+  const state = { search: '', brand: '', fuel: '', transmission: '', maxPrice: Infinity, status: '' };
+
+  // Build brand chips
+  const brands = [...new Set(getVehicles().map(v => v.brand))].sort();
+  const brandContainer = document.getElementById('chipsBrand');
+  const todosBtn = document.createElement('button');
+  todosBtn.className = 'sf-chip sf-chip-active';
+  todosBtn.dataset.val = '';
+  todosBtn.textContent = 'Todos';
+  brandContainer.appendChild(todosBtn);
+  brands.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'sf-chip';
+    btn.dataset.val = b;
+    btn.textContent = b;
+    brandContainer.appendChild(btn);
+  });
+
+  // Chip group logic
+  function initChipGroup(containerId, stateKey) {
+    const container = document.getElementById(containerId);
+    container.addEventListener('click', e => {
+      const chip = e.target.closest('.sf-chip');
+      if (!chip) return;
+      container.querySelectorAll('.sf-chip').forEach(c => c.classList.remove('sf-chip-active'));
+      if (state[stateKey] === chip.dataset.val && chip.dataset.val !== '') {
+        state[stateKey] = '';
+      } else {
+        chip.classList.add('sf-chip-active');
+        state[stateKey] = chip.dataset.val;
+      }
+      if (!state[stateKey]) {
+        const todosChip = container.querySelector('[data-val=""]');
+        if (todosChip) todosChip.classList.add('sf-chip-active');
+      }
+      renderVehicles();
+    });
+  }
+
+  initChipGroup('chipsStatus', 'status');
+  initChipGroup('chipsFuel', 'fuel');
+  initChipGroup('chipsTransmission', 'transmission');
+  initChipGroup('chipsBrand', 'brand');
+
+  // Search
+  document.getElementById('searchInput').addEventListener('input', e => {
+    state.search = e.target.value.toLowerCase();
+    renderVehicles();
+  });
+
+  // Price slider
+  const priceInput = document.getElementById('filterPrice');
+  const priceDisplay = document.getElementById('priceDisplay');
+  const rangeTrack = document.getElementById('rangeTrack');
+
+  function updateSlider() {
+    const val = parseInt(priceInput.value);
+    const pct = (val / 80000) * 100;
+    rangeTrack.style.width = pct + '%';
+    state.maxPrice = val >= 80000 ? Infinity : val;
+    priceDisplay.textContent = val >= 80000 ? 'Sin límite' : val.toLocaleString('es-ES') + ' €';
+    renderVehicles();
+  }
+  priceInput.addEventListener('input', updateSlider);
+  updateSlider();
+
+  // Reset
+  document.getElementById('filterReset').addEventListener('click', () => {
+    state.search = ''; state.brand = ''; state.fuel = '';
+    state.transmission = ''; state.maxPrice = Infinity; state.status = '';
+    document.getElementById('searchInput').value = '';
+    priceInput.value = 80000;
+    updateSlider();
+    document.querySelectorAll('.sf-chip').forEach(c => c.classList.remove('sf-chip-active'));
+    document.querySelectorAll('.sf-chips [data-val=""]').forEach(c => c.classList.add('sf-chip-active'));
+    renderVehicles();
+  });
+
+  function renderVehicles() {
+    const filtered = getVehicles().filter(v => {
+      if (state.search && !`${v.brand} ${v.model}`.toLowerCase().includes(state.search)) return false;
+      if (state.brand  && v.brand !== state.brand)           return false;
+      if (state.fuel   && v.fuel  !== state.fuel)            return false;
+      if (state.transmission && v.transmission !== state.transmission) return false;
+      if (state.maxPrice < Infinity && v.price > state.maxPrice) return false;
+      if (state.status === 'available' && v.sold)  return false;
+      if (state.status === 'sold'      && !v.sold) return false;
+      return true;
+    });
+
+    document.getElementById('filterCount').textContent =
+      `${filtered.length} vehículo${filtered.length !== 1 ? 's' : ''}`;
+
+    const grid = document.getElementById('vehiclesGrid');
+    grid.innerHTML = filtered.length
+      ? filtered.map(v => renderVehicleCard(v)).join('')
+      : `<div class="no-results" style="opacity:1;transform:none;transition:none">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <p class="no-results-title">Sin resultados</p>
+          <p class="no-results-text">Prueba a cambiar los filtros o <a href="contacto.html" style="color:var(--brand);font-weight:600">contáctanos</a>.</p>
+        </div>`;
+    if (firstRender) { firstRender = false; if (window.animRefresh) window.animRefresh(); }
+  }
+
+  let firstRender = true;
+  renderVehicles();
+</script>
+<script src="js/animations.js"></script>
+</body>
+</html>

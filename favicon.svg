@@ -1,0 +1,8 @@
+<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="64" height="64" rx="14" fill="#1a1a2e"/>
+  <!-- A mark, scaled/centered from original viewBox 0 0 188 58 to fit left half -->
+  <g transform="translate(6,10) scale(0.255)">
+    <path d="M9 46 L9 22 Q9 9 22 9 L66 9 Q79 9 79 22 L79 42 Q79 49 72 49 L24 49 L24 55 Q24 63 34 63" stroke="white" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M101 22 Q101 9 114 9 L148 9 Q161 9 161 22 Q161 35 148 35 L114 35 Q101 35 101 48 Q101 61 114 61 L148 61 Q161 61 161 48" stroke="white" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+</svg>

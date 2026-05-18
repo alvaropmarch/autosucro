@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autosucro — Vehículos de Ocasión · Cullera, Valencia</title>
+  <meta name="description" content="Concesionario multimarca en Cullera con más de 45 años de experiencia. Vehículos seminuevos y de ocasión. Taller propio con mecánica, chapa y pintura.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <style>
+    .vehicle-ticker-wrap {
+      overflow-x: clip;
+      overflow-y: visible;
+      width: 100%;
+      margin-top: 32px;
+      position: relative;
+      padding: 8px 0;
+    }
+    .vehicle-ticker-wrap::before,
+    .vehicle-ticker-wrap::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 80px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .vehicle-ticker-wrap::before {
+      left: 0;
+      background: linear-gradient(to right, #FAFAFA 40%, transparent);
+    }
+    .vehicle-ticker-wrap::after {
+      right: 0;
+      background: linear-gradient(to left, #FAFAFA 40%, transparent);
+    }
+    .vehicle-ticker {
+      display: flex;
+      gap: 20px;
+      width: max-content;
+      padding: 12px 0;
+      animation: ticker-left var(--ticker-duration, 28s) linear infinite;
+    }
+    .vehicle-ticker:hover { animation-play-state: paused; }
+    .vehicle-ticker .vehicle-card {
+      width: 280px;
+      flex-shrink: 0;
+    }
+    @keyframes ticker-left {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="header-container"></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Cullera, Valencia · Desde 1979</p>
+    <h1 class="hero-title">
+      Vehículos
+      <em>seminuevos</em>
+      <em>y de ocasión</em>
+    </h1>
+    <p class="hero-desc">Concesionario multimarca con más de 45 años cuidándote. 2.000 m² de instalaciones y taller propio.</p>
+    <div class="hero-actions">
+      <a href="vehiculos.html" class="btn-contact">Ver vehículos</a>
+      <a href="contacto.html" class="hero-link-btn">Reservar cita en taller</a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stats-grid">
+    <div><p class="stat-num">+45</p><p class="stat-label">Años de experiencia</p></div>
+    <div><p class="stat-num">2.000</p><p class="stat-label">m² de instalaciones</p></div>
+    <div><p class="stat-num">12</p><p class="stat-label">Meses de garantía</p></div>
+    <div><p class="stat-num">100%</p><p class="stat-label">Atención personalizada</p></div>
+  </div>
+</div>
+
+<!-- VEHICLES -->
+<section class="section vehicles-section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="label-tag">Stock actual</p>
+        <h2 class="section-title">Coches <em>de ocasión</em></h2>
+        <p class="section-sub">Todos nuestros vehículos se entregan revisados, probados y con garantía propia de 12 meses.</p>
+      </div>
+      <a href="vehiculos.html" class="btn btn-dark-outline">Ver catálogo completo</a>
+    </div>
+  </div>
+  <div class="vehicle-ticker-wrap">
+    <div class="vehicle-ticker" id="homeTicker"></div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section class="section" style="background:var(--white);padding-top:0">
+  <div class="container">
+    <div class="section-head" style="margin-bottom:36px">
+      <div>
+        <p class="label-tag">Por qué elegirnos</p>
+        <h2 class="section-title">Compra <em>con confianza</em></h2>
+      </div>
+    </div>
+    <div class="why-grid">
+      <div class="why-item">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <p class="why-item-title">Atención personalizada</p>
+        <p class="why-item-text">Te acompañamos en cada paso de la compra</p>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <p class="why-item-title">Revisados y probados</p>
+        <p class="why-item-text">Todos los vehículos pasan por nuestro taller antes de entregarse</p>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <p class="why-item-title">12 meses de garantía</p>
+        <p class="why-item-text">Garantía propia y externa disponible</p>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </div>
+        <p class="why-item-title">Financiación</p>
+        <p class="why-item-text">Adaptamos las cuotas a tu situación</p>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+        </div>
+        <p class="why-item-title">Aceptamos tu coche</p>
+        <p class="why-item-text">Tu vehículo como parte del pago</p>
+      </div>
+      <div class="why-item">
+        <div class="why-icon">
+          <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <p class="why-item-title">Taller propio</p>
+        <p class="why-item-text">Mecánica, chapa, pintura y electricidad</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORKSHOP -->
+<section class="section workshop-section">
+  <div class="container">
+    <div class="workshop-grid">
+      <div>
+        <p class="ws-eyebrow">Taller propio</p>
+        <h2 class="ws-title">Mecánica, chapa <em>y pintura</em></h2>
+        <p class="ws-text">Nuestro taller cuenta con los mejores sistemas de diagnosis y maquinaria propia para ofrecerte el mejor servicio en mecánica, carrocería, pintura y electricidad.</p>
+        <div class="ws-features">
+          <p class="ws-feature"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Sistemas de diagnosis de última generación</p>
+          <p class="ws-feature"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Maquinaria propia de chapa y pintura</p>
+          <p class="ws-feature"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Sustitución de neumáticos y geometría</p>
+          <p class="ws-feature"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Gestión completa de siniestros</p>
+          <p class="ws-feature"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Tratamiento de pulido y restauración</p>
+        </div>
+        <a href="contacto.html" class="btn btn-white">Pide cita en el taller</a>
+      </div>
+      <div class="workshop-img">
+        <img src="images/taller/P1070468.webp" alt="Instalaciones Autosucro" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="section" style="background:var(--bg)">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="label-tag">Opiniones de clientes</p>
+        <h2 class="section-title">Lo que dicen <em>nuestros clientes</em></h2>
+      </div>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Llevaba el coche de la empresa y siempre fueron muy amables, el personal muy agradable y atento. Si la reparación había de ser diferente a la planteada, te llamaban para informarte y si era más cara te asesoraban del nuevo precio por si no estabas de acuerdo. El personal de recepción apunta muy bien lo que necesitas y te atiende con mucha profesionalidad. Seguir así, porque hay pocos talleres decentes donde no te engañen, y eso hace crecer la clientela y las recomendaciones a futuros clientes."</p>
+        <div class="review-author">
+          <div class="review-avatar">E</div>
+          <div><p class="review-name">Eva Orellana</p><p class="review-date">Google · Local Guide</p></div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Tenía que hacer una revisión urgente a mi coche y ver un ruido extraño que hacía. Las dos chicas se portaron maravillosamente bien conmigo, cumplieron con el tiempo dicho y la atención recibida fue óptima. Me dijeron que ya podría viajar tranquila a Madrid, y así voy a ir, tranquila, porque ellos me transmitieron tranquilidad. Calidad, precio está bien y es un taller serio. Desde luego en cuanto me lo avise el coche, no dudaré en volver. Un abrazo y muchas gracias al equipo SUCRO."</p>
+        <div class="review-author">
+          <div class="review-avatar">I</div>
+          <div><p class="review-name">Inés Benítez de Lugo</p><p class="review-date">Google · Local Guide</p></div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"El servicio fue sumamente competente, rápido y a un precio razonable. Tuve una avería con mi Volkswagen. Diagnosticaron el problema sin cita previa, pidieron la pieza y la reemplazaron en menos de una hora (incluso me mostraron la pieza dañada). El costo del servicio estuvo dentro del promedio, o incluso por debajo. Excelente servicio, sin duda."</p>
+        <div class="review-author">
+          <div class="review-avatar">A</div>
+          <div><p class="review-name">Andrea Franca</p><p class="review-date">Google · hace 3 años</p></div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Necesitaba una revisión y cambio de llantas para mi auto arrendado. El servicio y la calidad del trabajo fueron excelentes. El dueño se encargó de todo, desde llevarme a casa y traerme de vuelta hasta llamar a la compañía de arrendamiento para coordinar todo lo necesario. Además, hablaba inglés, lo cual fue una gran ventaja. Gracias, José."</p>
+        <div class="review-author">
+          <div class="review-avatar">B</div>
+          <div><p class="review-name">Bernhard Scherler</p><p class="review-date">Google · hace 4 años</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="vehicleModal" onclick="if(event.target===this)closeVehicleModal()">
+  <div class="modal" id="vehicleModalContent"></div>
+</div>
+
+<div id="footer-container"></div>
+
+<script src="js/vehicles-data.js"></script>
+<script src="js/components.js"></script>
+<script>
+  document.getElementById('header-container').innerHTML = renderHeader('Inicio');
+  document.getElementById('footer-container').innerHTML = renderFooter();
+  initMobileNav();
+
+  const vehicles = getVehicles().filter(v => !v.sold);
+  const ticker = document.getElementById('homeTicker');
+  if (vehicles.length) {
+    const cards = vehicles.map(v => renderVehicleCard(v)).join('');
+    ticker.innerHTML = cards + cards;
+    requestAnimationFrame(() => {
+      const totalW = ticker.scrollWidth / 2;
+      const speed = 60; // px/s
+      const dur = totalW / speed;
+      ticker.style.setProperty('--ticker-duration', `${dur.toFixed(1)}s`);
+    });
+  }
+</script>
+<script src="js/animations.js"></script>
+</body>
+</html>
