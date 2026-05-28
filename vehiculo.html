@@ -37,12 +37,17 @@
     const mainSrc = imgs[0] || '';
 
     const imgEl = mainSrc
-      ? `<img id="vpMainImg" src="${mainSrc}" alt="${v.brand} ${v.model}">`
+      ? `<img id="vpMainImg" src="${mainSrc}" alt="${v.brand} ${v.model}" onerror="this.style.display='none'">`
       : `<div class="vp-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="width:64px;height:64px;opacity:0.2"><path d="M5 17H3a2 2 0 01-2-2V9a2 2 0 012-2h1.5M19 17h2a2 2 0 002-2V9a2 2 0 00-2-2h-1.5M7 9l2-5h6l2 5M3 9h18M7 17v2M17 17v2"/></svg></div>`;
+
+    const arrowsEl = imgs.length > 1
+      ? `<button class="vp-arrow vp-arrow-prev" id="vpPrev" aria-label="Anterior"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+         <button class="vp-arrow vp-arrow-next" id="vpNext" aria-label="Siguiente"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>`
+      : '';
 
     const thumbsEl = imgs.length > 1
       ? `<div class="vp-thumbs">${imgs.map((src, i) =>
-          `<img class="vp-thumb${i === 0 ? ' active' : ''}" src="${src}" loading="lazy" onclick="vpSwitch('${src}',this)" alt="${v.brand} ${v.model} foto ${i+1}">`
+          `<img class="vp-thumb${i === 0 ? ' active' : ''}" src="${src}" loading="lazy" data-vpidx="${i}" alt="${v.brand} ${v.model} foto ${i+1}" onerror="this.style.display='none'">`
         ).join('')}</div>`
       : '';
 
@@ -62,7 +67,11 @@
     document.getElementById('vehiclePage').innerHTML = `
       <!-- HERO IMAGE -->
       <div class="vp-hero">
-        <div class="vp-img">${imgEl}</div>
+        <div class="vp-img">
+          ${mainSrc ? `<div class="vp-img-blur-bg" id="vpMainImgBlur" style="background-image: url('${mainSrc}')"></div>` : ''}
+          ${imgEl}
+          ${arrowsEl}
+        </div>
         <div class="vp-hero-bar">
           <a href="vehiculos.html" class="vp-back">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
@@ -124,22 +133,60 @@
             <div class="vp-dealer-card">
               <p class="vp-dealer-title">Autosucro · Cullera</p>
               <p class="vp-dealer-info">Carrer Sueca, 32 — 46400 Cullera, Valencia</p>
-              <p class="vp-dealer-info">Lun–Vie 9:00–14:00 / 16:00–19:30 · Sáb 9:00–13:30</p>
+              <p class="vp-dealer-info">Lun–Vie 8:30–13:30 / 16:00–19:00 · Sáb y Dom: Cerrado</p>
             </div>
           </div>
 
         </div>
       </div>`;
-  }
 
-  function vpSwitch(src, el) {
-    const main = document.getElementById('vpMainImg');
-    if (main) main.src = src;
-    document.querySelectorAll('.vp-thumb').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
+    let vpIdx = 0;
+
+    function vpSwitch(src, el) {
+      const main = document.getElementById('vpMainImg');
+      if (main) main.src = src;
+      const blurBg = document.getElementById('vpMainImgBlur');
+      if (blurBg) blurBg.style.backgroundImage = `url('${src}')`;
+      document.querySelectorAll('.vp-thumb').forEach(t => t.classList.remove('active'));
+      if (el) el.classList.add('active');
+      vpIdx = imgs.indexOf(src);
+    }
+
+    function vpStep(dir) {
+      vpIdx = ((vpIdx + dir) + imgs.length) % imgs.length;
+      const src = imgs[vpIdx];
+      const thumb = document.querySelectorAll('.vp-thumb')[vpIdx];
+      vpSwitch(src, thumb || null);
+    }
+
+    const prevBtn = document.getElementById('vpPrev');
+    const nextBtn = document.getElementById('vpNext');
+    if (prevBtn) prevBtn.addEventListener('click', () => vpStep(-1));
+    if (nextBtn) nextBtn.addEventListener('click', () => vpStep(1));
+
+    document.querySelectorAll('.vp-thumb').forEach(thumb => {
+      thumb.addEventListener('click', () => {
+        const i = parseInt(thumb.dataset.vpidx);
+        vpIdx = i;
+        vpSwitch(imgs[i], thumb);
+      });
+    });
   }
 </script>
 <style>
+.vp-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  z-index: 5; width: 44px; height: 44px;
+  background: rgba(255,255,255,0.92); border: none; border-radius: 50%;
+  color: var(--brand);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background 0.18s, opacity 0.18s;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.22);
+}
+.vp-arrow:hover { background: white; }
+.vp-arrow-prev { left: 16px; }
+.vp-arrow-next { right: 16px; }
+
 .vp-thumbs {
   display: flex;
   gap: 8px;

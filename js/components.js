@@ -79,6 +79,19 @@ function renderHeader(activePage) {
   </div>`;
 }
 
+/* ── CONTACT CTA ── */
+function renderContactCta() {
+  return `
+  <section class="page-contact-cta">
+    <div class="container">
+      <div class="page-cta-inner">
+        <h2 class="page-cta-title">¿Tienes alguna <em>consulta?</em></h2>
+        <a href="contacto.html" class="btn btn-dark">Contáctanos</a>
+      </div>
+    </div>
+  </section>`;
+}
+
 /* ── FOOTER ── */
 function renderFooter() {
   return `
@@ -90,9 +103,7 @@ function renderFooter() {
         </div>
         <p class="footer-tagline">Concesionario multimarca con más de 45 años cuidándote. Empresa familiar fundada en 1979. Cullera, Valencia.</p>
         <div class="footer-social">
-          <a href="#" title="Facebook">${ICONS.fb}</a>
-          <a href="#" title="YouTube">${ICONS.yt}</a>
-          <a href="#" title="Instagram">${ICONS.ig}</a>
+          <a href="https://www.instagram.com/autosucro?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" title="Instagram">${ICONS.ig}</a>
         </div>
       </div>
       <div>
@@ -135,16 +146,29 @@ function renderFooter() {
 
 /* ── VEHICLE CARD ── */
 function renderVehicleCard(vehicle) {
-  const imgSrc = vehicle.image || '';
-  const imgEl = imgSrc
-    ? `<img src="${imgSrc}" alt="${vehicle.brand} ${vehicle.model}" loading="lazy" onerror="this.parentElement.innerHTML='<div style=width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg-2)><svg width=40 height=40 viewBox=\\'0 0 24 24\\' fill=none stroke=#ccc stroke-width=1><rect x=3 y=11 width=18 height=11 rx=2/><path d=\\'M7 11V7a5 5 0 0110 0v4\\'/></svg></div>'">`
+  const imgs   = (vehicle.images && vehicle.images.length) ? vehicle.images : (vehicle.image ? [vehicle.image] : []);
+  const imgSrc = imgs[0] || '';
+  const imgEl  = imgSrc
+    ? `<img src="${imgSrc}" alt="${vehicle.brand} ${vehicle.model}" loading="lazy" class="vc-photo" data-idx="0" data-vid="${vehicle.id}">`
     : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--bg-2)">${ICONS.car}</div>`;
+
+  const multiImg = imgs.length > 1;
+  const dotsHtml = multiImg
+    ? `<div class="vc-dots">${imgs.map((_,i) => `<span class="vc-dot${i===0?' vc-dot-on':''}"></span>`).join('')}</div>`
+    : '';
+  const arrowsHtml = multiImg
+    ? `<button class="vc-arrow vc-prev" onclick="vcStep(event,this,-1)" aria-label="Anterior">&#8249;</button>
+       <button class="vc-arrow vc-next" onclick="vcStep(event,this,1)"  aria-label="Siguiente">&#8250;</button>`
+    : '';
 
   return `
   <a class="vehicle-card${vehicle.sold ? ' sold' : ''}" href="vehiculo.html?id=${vehicle.id}">
-    <div class="vehicle-img">
+    <div class="vehicle-img" data-imgs='${JSON.stringify(imgs)}'>
+      ${imgSrc ? `<div class="vehicle-img-blur-bg" style="background-image: url('${imgSrc}')"></div>` : ''}
       ${imgEl}
       <span class="v-badge v-badge-${vehicle.sold ? 'off' : 'on'}">${vehicle.sold ? 'Vendido' : 'Disponible'}</span>
+      ${arrowsHtml}
+      ${dotsHtml}
     </div>
     <div class="vehicle-body">
       <p class="v-brand">${vehicle.brand}</p>
@@ -159,6 +183,20 @@ function renderVehicleCard(vehicle) {
       </div>
     </div>
   </a>`;
+}
+
+function vcStep(e, btn, dir) {
+  e.preventDefault(); e.stopPropagation();
+  const wrap  = btn.closest('.vehicle-img');
+  const img   = wrap.querySelector('.vc-photo');
+  const blur  = wrap.querySelector('.vehicle-img-blur-bg');
+  const dots  = wrap.querySelectorAll('.vc-dot');
+  const imgs  = JSON.parse(wrap.dataset.imgs);
+  const next  = ((parseInt(img.dataset.idx) + dir) + imgs.length) % imgs.length;
+  img.src                        = imgs[next];
+  img.dataset.idx                = next;
+  if (blur) blur.style.backgroundImage = `url('${imgs[next]}')`;
+  dots.forEach((d, i) => d.classList.toggle('vc-dot-on', i === next));
 }
 
 /* ── VEHICLE MODAL ── */
@@ -177,7 +215,10 @@ function renderVehicleModal(vehicle) {
   </div>
   <div class="modal-body">
     <div class="modal-grid">
-      <div class="modal-img">${imgEl}</div>
+      <div class="modal-img">
+        ${imgSrc ? `<div class="modal-img-blur-bg" style="background-image: url('${imgSrc}')"></div>` : ''}
+        ${imgEl}
+      </div>
       <div>
         <div class="modal-specs">
           <div class="modal-spec"><p class="modal-spec-label">Marca</p><p class="modal-spec-val">${vehicle.brand}</p></div>
@@ -220,7 +261,8 @@ function initMobileNav() {
 
   const header = document.getElementById('siteHeader');
   if (header) {
-    const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 40);
+    const hasHero = !!document.querySelector('.hero');
+    const onScroll = () => header.classList.toggle('scrolled', !hasHero || window.scrollY > 40);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
   }

@@ -18,8 +18,8 @@
   </div>
 </div>
 
-<!-- SERVICES -->
-<section class="section">
+<!-- SERVICES ─────────────────────────────────────────────────── -->
+<section class="section" style="background:var(--white)">
   <div class="container">
     <div class="section-head">
       <div>
@@ -93,8 +93,22 @@
   </div>
 </section>
 
-<!-- INFO CARDS -->
-<section class="section" style="background:var(--bg)">
+<!-- PHOTO GALLERY ────────────────────────────────────────────── -->
+<div class="srv-gallery-wrap">
+  <div class="srv-gallery" id="srvGallery">
+    <img src="images/taller/P1070480.webp" alt="Taller Autosucro" loading="lazy" draggable="false">
+    <img src="images/taller/P1070479.webp" alt="Taller Autosucro" loading="lazy" draggable="false">
+    <img src="images/taller/P1070483.webp" alt="Taller Autosucro" loading="lazy" draggable="false">
+    <img src="images/taller/P1070478.webp" alt="Taller Autosucro" loading="lazy" draggable="false">
+    <img src="images/taller/P1070480.webp" alt="Taller Autosucro" loading="lazy" draggable="false">
+    <img src="images/taller/P1070479.webp" alt="Taller Autosucro" loading="lazy" draggable="false">
+    <img src="images/taller/P1070483.webp" alt="Taller Autosucro" loading="lazy" draggable="false">
+    <img src="images/taller/P1070478.webp" alt="Taller Autosucro" loading="lazy" draggable="false">
+  </div>
+</div>
+
+<!-- GARANTÍA / FINANCIACIÓN ──────────────────────────────────── -->
+<section class="section" style="background:var(--white);padding-bottom:32px">
   <div class="container">
     <div class="section-head">
       <div>
@@ -122,8 +136,8 @@
   </div>
 </section>
 
-<!-- INSURERS -->
-<section class="section">
+<!-- ASEGURADORAS ─────────────────────────────────────────────── -->
+<section class="section" style="background:var(--white);padding-top:32px">
   <div class="container">
     <div class="section-head">
       <div>
@@ -146,18 +160,6 @@
   </div>
 </section>
 
-<!-- CTA -->
-<section class="section workshop-section">
-  <div class="container" style="text-align:center">
-    <p class="ws-eyebrow" style="text-align:center">Reserva una visita</p>
-    <h2 class="ws-title" style="text-align:center;max-width:540px;margin:0 auto 18px">Pide cita en nuestro <em>taller</em></h2>
-    <p style="font-size:15px;color:rgba(255,255,255,0.55);max-width:440px;margin:0 auto 36px;line-height:1.75">Llámanos, escríbenos o rellena el formulario de contacto. Te atendemos lo antes posible.</p>
-    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-      <a href="contacto.html" class="btn btn-white">Reservar cita</a>
-      <a href="tel:961730361" class="btn btn-white-outline">961 730 361</a>
-    </div>
-  </div>
-</section>
 
 <div id="footer-container"></div>
 <script src="js/vehicles-data.js"></script>
@@ -166,6 +168,58 @@
   document.getElementById('header-container').innerHTML = renderHeader('Servicios');
   document.getElementById('footer-container').innerHTML = renderFooter();
   initMobileNav();
+</script>
+<script>
+  (function () {
+    const gallery = document.getElementById('srvGallery');
+    if (!gallery) return;
+
+    const SPEED = 0.5;
+    let pos    = 0;
+    let paused = false;
+
+    function half() { return gallery.scrollWidth / 2; }
+
+    function step() {
+      if (!paused) {
+        pos += SPEED;
+        if (pos >= half()) pos -= half();
+        gallery.style.transform = `translateX(-${pos}px)`;
+      }
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+
+    let dragging = false, dragStartX = 0, dragStartPos = 0;
+
+    gallery.addEventListener('mousedown', e => {
+      dragging = true; paused = true;
+      dragStartX = e.clientX; dragStartPos = pos;
+      gallery.style.cursor = 'grabbing';
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      pos = (dragStartPos + (dragStartX - e.clientX) + half()) % half();
+      gallery.style.transform = `translateX(-${pos}px)`;
+    });
+    window.addEventListener('mouseup', () => {
+      if (!dragging) return;
+      dragging = false;
+      gallery.style.cursor = 'grab';
+      paused = false;
+    });
+
+    gallery.addEventListener('touchstart', e => {
+      paused = true;
+      dragStartX = e.touches[0].clientX; dragStartPos = pos;
+    }, { passive: true });
+    gallery.addEventListener('touchmove', e => {
+      pos = (dragStartPos + (dragStartX - e.touches[0].clientX) + half()) % half();
+      gallery.style.transform = `translateX(-${pos}px)`;
+    }, { passive: true });
+    gallery.addEventListener('touchend', () => { paused = false; });
+  })();
 </script>
 <script src="js/animations.js"></script>
 </body>

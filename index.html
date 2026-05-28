@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Autosucro — Vehículos de Ocasión · Cullera, Valencia</title>
   <meta name="description" content="Concesionario multimarca en Cullera con más de 45 años de experiencia. Vehículos seminuevos y de ocasión. Taller propio con mecánica, chapa y pintura.">
+  <link rel="preload" as="image" href="images/taller/P1070320.webp">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/animations.css">
   <style>
@@ -38,17 +39,67 @@
       gap: 20px;
       width: max-content;
       padding: 12px 0;
-      animation: ticker-left var(--ticker-duration, 28s) linear infinite;
+      will-change: transform;
+      cursor: grab;
     }
-    .vehicle-ticker:hover { animation-play-state: paused; }
+    .vehicle-ticker.dragging { cursor: grabbing; user-select: none; }
     .vehicle-ticker .vehicle-card {
       width: 280px;
       flex-shrink: 0;
     }
-    @keyframes ticker-left {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
+
+    /* Review ticker */
+    .review-ticker-wrap {
+      overflow-x: clip;
+      overflow-y: visible;
+      width: 100%;
+      margin-top: 32px;
+      position: relative;
+      padding: 8px 0;
     }
+    .review-ticker-wrap::before,
+    .review-ticker-wrap::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 80px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .review-ticker-wrap::before {
+      left: 0;
+      background: linear-gradient(to right, var(--bg) 40%, transparent);
+    }
+    .review-ticker-wrap::after {
+      right: 0;
+      background: linear-gradient(to left, var(--bg) 40%, transparent);
+    }
+    .review-ticker {
+      display: flex;
+      gap: 14px;
+      width: max-content;
+      padding: 8px 0;
+      will-change: transform;
+    }
+    .review-ticker { cursor: grab; }
+    .review-ticker.dragging { cursor: grabbing; user-select: none; }
+    .review-ticker .review-card {
+      width: 300px;
+      flex-shrink: 0;
+      padding: 20px;
+    }
+    .review-ticker .review-text {
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-size: 13px;
+      margin-bottom: 14px;
+    }
+    .review-ticker .review-stars { font-size: 12px; margin-bottom: 10px; }
+    .review-ticker .review-name  { font-size: 12.5px; }
+    .review-ticker .review-date  { font-size: 11px; }
+    .review-ticker .review-avatar { width: 32px; height: 32px; font-size: 12px; }
   </style>
 </head>
 <body>
@@ -59,6 +110,9 @@
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-overlay"></div>
+  <div class="hero-brand">
+    <img src="Recursos/autosucro_blanco.png" alt="Autosucro">
+  </div>
   <div class="hero-content">
     <p class="hero-eyebrow">Cullera, Valencia · Desde 1979</p>
     <h1 class="hero-title">
@@ -69,7 +123,7 @@
     <p class="hero-desc">Concesionario multimarca con más de 45 años cuidándote. 2.000 m² de instalaciones y taller propio.</p>
     <div class="hero-actions">
       <a href="vehiculos.html" class="btn-contact">Ver vehículos</a>
-      <a href="contacto.html" class="hero-link-btn">Reservar cita en taller</a>
+      <a href="contacto.html" class="hero-link-btn">Contáctanos</a>
     </div>
   </div>
 </section>
@@ -172,10 +226,10 @@
           <p class="ws-feature"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Gestión completa de siniestros</p>
           <p class="ws-feature"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Tratamiento de pulido y restauración</p>
         </div>
-        <a href="contacto.html" class="btn btn-white">Pide cita en el taller</a>
+        <a href="contacto.html" class="btn btn-white">Contáctanos</a>
       </div>
       <div class="workshop-img">
-        <img src="images/taller/P1070468.webp" alt="Instalaciones Autosucro" loading="lazy">
+        <img src="Recursos/Captura de pantalla 2026-03-20 a las 12.04.41.png" alt="Instalaciones Autosucro" loading="lazy">
       </div>
     </div>
   </div>
@@ -190,37 +244,56 @@
         <h2 class="section-title">Lo que dicen <em>nuestros clientes</em></h2>
       </div>
     </div>
-    <div class="reviews-grid">
+  </div>
+  <div class="review-ticker-wrap">
+    <div class="review-ticker">
       <div class="review-card">
         <div class="review-stars">★★★★★</div>
-        <p class="review-text">"Llevaba el coche de la empresa y siempre fueron muy amables, el personal muy agradable y atento. Si la reparación había de ser diferente a la planteada, te llamaban para informarte y si era más cara te asesoraban del nuevo precio por si no estabas de acuerdo. El personal de recepción apunta muy bien lo que necesitas y te atiende con mucha profesionalidad. Seguir así, porque hay pocos talleres decentes donde no te engañen, y eso hace crecer la clientela y las recomendaciones a futuros clientes."</p>
-        <div class="review-author">
-          <div class="review-avatar">E</div>
-          <div><p class="review-name">Eva Orellana</p><p class="review-date">Google · Local Guide</p></div>
-        </div>
-      </div>
-      <div class="review-card">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">"Tenía que hacer una revisión urgente a mi coche y ver un ruido extraño que hacía. Las dos chicas se portaron maravillosamente bien conmigo, cumplieron con el tiempo dicho y la atención recibida fue óptima. Me dijeron que ya podría viajar tranquila a Madrid, y así voy a ir, tranquila, porque ellos me transmitieron tranquilidad. Calidad, precio está bien y es un taller serio. Desde luego en cuanto me lo avise el coche, no dudaré en volver. Un abrazo y muchas gracias al equipo SUCRO."</p>
+        <p class="review-text">"Tenía que hacer una revisión urgente a mi coche y ver un ruido extraño que hacía. Las dos chicas se portaron maravillosamente bien conmigo, cumplieron con el tiempo dicho y la atención recibida fue óptima. Me dijeron que ya podría viajar tranquila a Madrid a ver a mi hijo y así voy a ir, tranquila, porque ellos me transmitieron tranquilidad. Calidad, precio está bien y es un taller serio."</p>
         <div class="review-author">
           <div class="review-avatar">I</div>
-          <div><p class="review-name">Inés Benítez de Lugo</p><p class="review-date">Google · Local Guide</p></div>
+          <div><p class="review-name">Inés Benítez de Lugo</p><p class="review-date">Google · Local Guide · hace un año</p></div>
         </div>
       </div>
       <div class="review-card">
         <div class="review-stars">★★★★★</div>
-        <p class="review-text">"El servicio fue sumamente competente, rápido y a un precio razonable. Tuve una avería con mi Volkswagen. Diagnosticaron el problema sin cita previa, pidieron la pieza y la reemplazaron en menos de una hora (incluso me mostraron la pieza dañada). El costo del servicio estuvo dentro del promedio, o incluso por debajo. Excelente servicio, sin duda."</p>
+        <p class="review-text">"Llevaba el coche de la empresa y siempre fueron muy amables, el personal muy agradable y atento. Si la reparación había de ser diferente a la planteada te llamaban para informarte y si era más cara te asesoraban del nuevo precio. El personal de recepción apunta muy bien lo que necesitas y te atiende con mucha profesionalidad. Seguir así porque hay pocos talleres decentes donde no te engañen."</p>
         <div class="review-author">
-          <div class="review-avatar">A</div>
-          <div><p class="review-name">Andrea Franca</p><p class="review-date">Google · hace 3 años</p></div>
+          <div class="review-avatar">E</div>
+          <div><p class="review-name">Eva Orellana</p><p class="review-date">Google · Local Guide · hace 6 años</p></div>
         </div>
       </div>
       <div class="review-card">
         <div class="review-stars">★★★★★</div>
-        <p class="review-text">"Necesitaba una revisión y cambio de llantas para mi auto arrendado. El servicio y la calidad del trabajo fueron excelentes. El dueño se encargó de todo, desde llevarme a casa y traerme de vuelta hasta llamar a la compañía de arrendamiento para coordinar todo lo necesario. Además, hablaba inglés, lo cual fue una gran ventaja. Gracias, José."</p>
+        <p class="review-text">"Me han reparado una avería super rápido y muy bien. Personal muy atento. Los recomiendo."</p>
         <div class="review-author">
-          <div class="review-avatar">B</div>
-          <div><p class="review-name">Bernhard Scherler</p><p class="review-date">Google · hace 4 años</p></div>
+          <div class="review-avatar">C</div>
+          <div><p class="review-name">Carolina Maire</p><p class="review-date">Google · Local Guide · hace un año</p></div>
+        </div>
+      </div>
+      <!-- duplicate for seamless loop -->
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Tenía que hacer una revisión urgente a mi coche y ver un ruido extraño que hacía. Las dos chicas se portaron maravillosamente bien conmigo, cumplieron con el tiempo dicho y la atención recibida fue óptima. Me dijeron que ya podría viajar tranquila a Madrid a ver a mi hijo y así voy a ir, tranquila, porque ellos me transmitieron tranquilidad. Calidad, precio está bien y es un taller serio."</p>
+        <div class="review-author">
+          <div class="review-avatar">I</div>
+          <div><p class="review-name">Inés Benítez de Lugo</p><p class="review-date">Google · Local Guide · hace un año</p></div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Llevaba el coche de la empresa y siempre fueron muy amables, el personal muy agradable y atento. Si la reparación había de ser diferente a la planteada te llamaban para informarte y si era más cara te asesoraban del nuevo precio. El personal de recepción apunta muy bien lo que necesitas y te atiende con mucha profesionalidad. Seguir así porque hay pocos talleres decentes donde no te engañen."</p>
+        <div class="review-author">
+          <div class="review-avatar">E</div>
+          <div><p class="review-name">Eva Orellana</p><p class="review-date">Google · Local Guide · hace 6 años</p></div>
+        </div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">"Me han reparado una avería super rápido y muy bien. Personal muy atento. Los recomiendo."</p>
+        <div class="review-author">
+          <div class="review-avatar">C</div>
+          <div><p class="review-name">Carolina Maire</p><p class="review-date">Google · Local Guide · hace un año</p></div>
         </div>
       </div>
     </div>
@@ -246,13 +319,128 @@
   if (vehicles.length) {
     const cards = vehicles.map(v => renderVehicleCard(v)).join('');
     ticker.innerHTML = cards + cards;
-    requestAnimationFrame(() => {
-      const totalW = ticker.scrollWidth / 2;
-      const speed = 60; // px/s
-      const dur = totalW / speed;
-      ticker.style.setProperty('--ticker-duration', `${dur.toFixed(1)}s`);
-    });
+    ticker.querySelectorAll('img').forEach(img => { img.loading = 'eager'; });
   }
+
+  (function () {
+    if (!ticker || !vehicles.length) return;
+    const SPEED = 0.5;
+    let pos = 0, paused = false, resumeTimer = null;
+    function half() { return ticker.scrollWidth / 2; }
+    function step() {
+      if (!paused) {
+        pos += SPEED;
+        if (pos >= half()) pos -= half();
+        ticker.style.transform = `translateX(-${pos}px)`;
+      }
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+    function scheduleResume() {
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(() => { paused = false; }, 1500);
+    }
+    let dragging = false, dragStartX = 0, dragStartPos = 0;
+    ticker.addEventListener('mousedown', e => {
+      if (e.target.closest('a')) return;
+      dragging = true; paused = true;
+      clearTimeout(resumeTimer);
+      dragStartX = e.clientX; dragStartPos = pos;
+      ticker.classList.add('dragging');
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      pos = (dragStartPos + (dragStartX - e.clientX) + half()) % half();
+      ticker.style.transform = `translateX(-${pos}px)`;
+    });
+    window.addEventListener('mouseup', () => {
+      if (!dragging) return;
+      dragging = false; ticker.classList.remove('dragging'); scheduleResume();
+    });
+    ticker.addEventListener('touchstart', e => {
+      paused = true; clearTimeout(resumeTimer);
+      dragStartX = e.touches[0].clientX; dragStartPos = pos;
+    }, { passive: true });
+    ticker.addEventListener('touchmove', e => {
+      pos = (dragStartPos + (dragStartX - e.touches[0].clientX) + half()) % half();
+      ticker.style.transform = `translateX(-${pos}px)`;
+    }, { passive: true });
+    ticker.addEventListener('touchend', scheduleResume);
+  })();
+</script>
+<script>
+  (function () {
+    const ticker = document.querySelector('.review-ticker');
+    if (!ticker) return;
+
+    const SPEED = 0.6;
+    let pos     = 0;
+    let paused  = false;
+    let resumeTimer = null;
+
+    function half() { return ticker.scrollWidth / 2; }
+
+    function step() {
+      if (!paused) {
+        pos += SPEED;
+        if (pos >= half()) pos -= half();
+        ticker.style.transform = `translateX(-${pos}px)`;
+      }
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+
+    function scheduleResume() {
+      clearTimeout(resumeTimer);
+      resumeTimer = setTimeout(() => { paused = false; }, 2000);
+    }
+
+    /* ── Mouse drag ── */
+    let dragging = false;
+    let dragStartX = 0;
+    let dragStartPos = 0;
+
+    ticker.addEventListener('mousedown', e => {
+      dragging = true;
+      paused = true;
+      clearTimeout(resumeTimer);
+      dragStartX   = e.clientX;
+      dragStartPos = pos;
+      ticker.classList.add('dragging');
+      e.preventDefault();
+    });
+
+    window.addEventListener('mousemove', e => {
+      if (!dragging) return;
+      const delta = dragStartX - e.clientX;
+      pos = (dragStartPos + delta + half()) % half();
+      ticker.style.transform = `translateX(-${pos}px)`;
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (!dragging) return;
+      dragging = false;
+      ticker.classList.remove('dragging');
+      scheduleResume();
+    });
+
+    /* ── Touch swipe ── */
+    ticker.addEventListener('touchstart', e => {
+      paused = true;
+      clearTimeout(resumeTimer);
+      dragStartX   = e.touches[0].clientX;
+      dragStartPos = pos;
+    }, { passive: true });
+
+    ticker.addEventListener('touchmove', e => {
+      const delta = dragStartX - e.touches[0].clientX;
+      pos = (dragStartPos + delta + half()) % half();
+      ticker.style.transform = `translateX(-${pos}px)`;
+    }, { passive: true });
+
+    ticker.addEventListener('touchend', scheduleResume);
+  })();
 </script>
 <script src="js/animations.js"></script>
 </body>
