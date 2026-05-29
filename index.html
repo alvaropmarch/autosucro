@@ -100,6 +100,54 @@
     .review-ticker .review-name  { font-size: 12.5px; }
     .review-ticker .review-date  { font-size: 11px; }
     .review-ticker .review-avatar { width: 32px; height: 32px; font-size: 12px; }
+
+    @media (max-width: 768px) {
+      /* Vehículos: snap-scroll nativo */
+      .vehicle-ticker-wrap {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        margin-top: 20px;
+        padding: 4px 0 4px 20px;
+      }
+      .vehicle-ticker-wrap::-webkit-scrollbar { display: none; }
+      .vehicle-ticker-wrap::before,
+      .vehicle-ticker-wrap::after { display: none; }
+      .vehicle-ticker {
+        transform: none !important;
+        padding: 8px 20px 8px 0;
+        gap: 14px;
+      }
+      .vehicle-ticker .vehicle-card {
+        width: 82vw;
+        scroll-snap-align: start;
+      }
+
+      /* Reseñas: snap-scroll nativo */
+      .review-ticker-wrap {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        margin-top: 20px;
+        padding: 4px 0 4px 20px;
+      }
+      .review-ticker-wrap::-webkit-scrollbar { display: none; }
+      .review-ticker-wrap::before,
+      .review-ticker-wrap::after { display: none; }
+      .review-ticker {
+        transform: none !important;
+        padding: 8px 20px 8px 0;
+      }
+      .review-ticker .review-card {
+        width: 82vw;
+        scroll-snap-align: start;
+      }
+      .review-dup { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -272,7 +320,7 @@
         </div>
       </div>
       <!-- duplicate for seamless loop -->
-      <div class="review-card">
+      <div class="review-card review-dup">
         <div class="review-stars">★★★★★</div>
         <p class="review-text">"Tenía que hacer una revisión urgente a mi coche y ver un ruido extraño que hacía. Las dos chicas se portaron maravillosamente bien conmigo, cumplieron con el tiempo dicho y la atención recibida fue óptima. Me dijeron que ya podría viajar tranquila a Madrid a ver a mi hijo y así voy a ir, tranquila, porque ellos me transmitieron tranquilidad. Calidad, precio está bien y es un taller serio."</p>
         <div class="review-author">
@@ -280,7 +328,7 @@
           <div><p class="review-name">Inés Benítez de Lugo</p><p class="review-date">Google · Local Guide · hace un año</p></div>
         </div>
       </div>
-      <div class="review-card">
+      <div class="review-card review-dup">
         <div class="review-stars">★★★★★</div>
         <p class="review-text">"Llevaba el coche de la empresa y siempre fueron muy amables, el personal muy agradable y atento. Si la reparación había de ser diferente a la planteada te llamaban para informarte y si era más cara te asesoraban del nuevo precio. El personal de recepción apunta muy bien lo que necesitas y te atiende con mucha profesionalidad. Seguir así porque hay pocos talleres decentes donde no te engañen."</p>
         <div class="review-author">
@@ -288,7 +336,7 @@
           <div><p class="review-name">Eva Orellana</p><p class="review-date">Google · Local Guide · hace 6 años</p></div>
         </div>
       </div>
-      <div class="review-card">
+      <div class="review-card review-dup">
         <div class="review-stars">★★★★★</div>
         <p class="review-text">"Me han reparado una avería super rápido y muy bien. Personal muy atento. Los recomiendo."</p>
         <div class="review-author">
@@ -314,16 +362,17 @@
   document.getElementById('footer-container').innerHTML = renderFooter();
   initMobileNav();
 
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
   const vehicles = getVehicles().filter(v => !v.sold);
   const ticker = document.getElementById('homeTicker');
   if (vehicles.length) {
     const cards = vehicles.map(v => renderVehicleCard(v)).join('');
-    ticker.innerHTML = cards + cards;
+    ticker.innerHTML = isMobile ? cards : cards + cards;
     ticker.querySelectorAll('img').forEach(img => { img.loading = 'eager'; });
   }
 
   (function () {
-    if (!ticker || !vehicles.length) return;
+    if (!ticker || !vehicles.length || isMobile) return;
     const SPEED = 0.5;
     let pos = 0, paused = false, resumeTimer = null;
     function half() { return ticker.scrollWidth / 2; }
@@ -372,7 +421,7 @@
 <script>
   (function () {
     const ticker = document.querySelector('.review-ticker');
-    if (!ticker) return;
+    if (!ticker || window.matchMedia('(max-width: 768px)').matches) return;
 
     const SPEED = 0.6;
     let pos     = 0;

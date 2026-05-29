@@ -190,9 +190,15 @@
     state.transmission = ''; state.maxPrice = Infinity; state.status = '';
     document.getElementById('searchInput').value = '';
     priceInput.value = 80000;
-    updateSlider();
-    document.querySelectorAll('.sf-chip').forEach(c => c.classList.remove('sf-chip-active'));
-    document.querySelectorAll('.sf-chips [data-val=""]').forEach(c => c.classList.add('sf-chip-active'));
+    rangeTrack.style.width = '100%';
+    priceDisplay.textContent = 'Sin límite';
+    ['chipsStatus', 'chipsFuel', 'chipsTransmission', 'chipsBrand'].forEach(id => {
+      const container = document.getElementById(id);
+      if (!container) return;
+      container.querySelectorAll('.sf-chip').forEach(c => c.classList.remove('sf-chip-active'));
+      const todos = container.querySelector('[data-val=""]');
+      if (todos) todos.classList.add('sf-chip-active');
+    });
     renderVehicles();
   });
 
