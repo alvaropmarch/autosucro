@@ -18,22 +18,7 @@
       padding: 8px 0;
     }
     .vehicle-ticker-wrap::before,
-    .vehicle-ticker-wrap::after {
-      content: '';
-      position: absolute;
-      top: 0; bottom: 0;
-      width: 80px;
-      z-index: 2;
-      pointer-events: none;
-    }
-    .vehicle-ticker-wrap::before {
-      left: 0;
-      background: linear-gradient(to right, #FAFAFA 40%, transparent);
-    }
-    .vehicle-ticker-wrap::after {
-      right: 0;
-      background: linear-gradient(to left, #FAFAFA 40%, transparent);
-    }
+    .vehicle-ticker-wrap::after { display: none; }
     .vehicle-ticker {
       display: flex;
       gap: 20px;
@@ -58,22 +43,7 @@
       padding: 8px 0;
     }
     .review-ticker-wrap::before,
-    .review-ticker-wrap::after {
-      content: '';
-      position: absolute;
-      top: 0; bottom: 0;
-      width: 80px;
-      z-index: 2;
-      pointer-events: none;
-    }
-    .review-ticker-wrap::before {
-      left: 0;
-      background: linear-gradient(to right, var(--bg) 40%, transparent);
-    }
-    .review-ticker-wrap::after {
-      right: 0;
-      background: linear-gradient(to left, var(--bg) 40%, transparent);
-    }
+    .review-ticker-wrap::after { display: none; }
     .review-ticker {
       display: flex;
       gap: 14px;
@@ -102,51 +72,22 @@
     .review-ticker .review-avatar { width: 32px; height: 32px; font-size: 12px; }
 
     @media (max-width: 768px) {
-      /* Vehículos: snap-scroll nativo */
       .vehicle-ticker-wrap {
-        overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
-        scroll-snap-type: x mandatory;
-        scrollbar-width: none;
+        overflow: hidden;
         margin-top: 20px;
-        padding: 4px 0 4px 20px;
+        padding: 4px 0;
       }
-      .vehicle-ticker-wrap::-webkit-scrollbar { display: none; }
-      .vehicle-ticker-wrap::before,
-      .vehicle-ticker-wrap::after { display: none; }
-      .vehicle-ticker {
-        transform: none !important;
-        padding: 8px 20px 8px 0;
-        gap: 14px;
-      }
-      .vehicle-ticker .vehicle-card {
-        width: 82vw;
-        scroll-snap-align: start;
-      }
+      .vehicle-ticker { gap: 14px; padding: 8px 0; }
+      .vehicle-ticker .vehicle-card { width: 260px; }
 
-      /* Reseñas: snap-scroll nativo */
       .review-ticker-wrap {
-        overflow-x: auto;
-        overflow-y: hidden;
-        -webkit-overflow-scrolling: touch;
-        scroll-snap-type: x mandatory;
-        scrollbar-width: none;
+        overflow: hidden;
         margin-top: 20px;
-        padding: 4px 0 4px 20px;
+        padding: 4px 0;
       }
-      .review-ticker-wrap::-webkit-scrollbar { display: none; }
-      .review-ticker-wrap::before,
-      .review-ticker-wrap::after { display: none; }
-      .review-ticker {
-        transform: none !important;
-        padding: 8px 20px 8px 0;
-      }
-      .review-ticker .review-card {
-        width: 82vw;
-        scroll-snap-align: start;
-      }
-      .review-dup { display: none; }
+      .review-ticker { padding: 8px 0; gap: 14px; }
+      .review-ticker .review-card { width: 260px; }
+      .review-dup { display: block; }
     }
   </style>
 </head>
@@ -158,9 +99,6 @@
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-overlay"></div>
-  <div class="hero-brand">
-    <img src="Recursos/autosucro_blanco.png" alt="Autosucro">
-  </div>
   <div class="hero-content">
     <p class="hero-eyebrow">Cullera, Valencia · Desde 1979</p>
     <h1 class="hero-title">
@@ -362,17 +300,16 @@
   document.getElementById('footer-container').innerHTML = renderFooter();
   initMobileNav();
 
-  const isMobile = window.matchMedia('(max-width: 768px)').matches;
   const vehicles = getVehicles().filter(v => !v.sold);
   const ticker = document.getElementById('homeTicker');
   if (vehicles.length) {
     const cards = vehicles.map(v => renderVehicleCard(v)).join('');
-    ticker.innerHTML = isMobile ? cards : cards + cards;
+    ticker.innerHTML = cards + cards;
     ticker.querySelectorAll('img').forEach(img => { img.loading = 'eager'; });
   }
 
   (function () {
-    if (!ticker || !vehicles.length || isMobile) return;
+    if (!ticker || !vehicles.length) return;
     const SPEED = 0.5;
     let pos = 0, paused = false, resumeTimer = null;
     function half() { return ticker.scrollWidth / 2; }
@@ -421,7 +358,7 @@
 <script>
   (function () {
     const ticker = document.querySelector('.review-ticker');
-    if (!ticker || window.matchMedia('(max-width: 768px)').matches) return;
+    if (!ticker) return;
 
     const SPEED = 0.6;
     let pos     = 0;

@@ -6,6 +6,10 @@
   <title>Vehículo — Autosucro</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/animations.css">
+  <style>
+    body { padding-top: 94px; }
+    @media (max-width: 768px) { body { padding-top: 76px; } }
+  </style>
 </head>
 <body>
 <div id="header-container"></div>
@@ -67,17 +71,16 @@
     document.getElementById('vehiclePage').innerHTML = `
       <!-- HERO IMAGE -->
       <div class="vp-hero">
-        <div class="vp-img">
-          ${mainSrc ? `<div class="vp-img-blur-bg" id="vpMainImgBlur" style="background-image: url('${mainSrc}')"></div>` : ''}
-          ${imgEl}
-          ${arrowsEl}
-        </div>
         <div class="vp-hero-bar">
           <a href="vehiculos.html" class="vp-back">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
             Volver al catálogo
           </a>
           <span class="v-badge v-badge-${v.sold ? 'off' : 'on'}" style="position:static">${v.sold ? 'Vendido' : 'Disponible'}</span>
+        </div>
+        <div class="vp-img">
+          ${imgEl}
+          ${arrowsEl}
         </div>
       </div>
       ${thumbsEl}
@@ -126,7 +129,6 @@
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 11 19.79 19.79 0 01.22 2.35 2 2 0 012.22.18h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92v2z"/></svg>
                 Llamar: 961 730 361
               </a>
-              <a href="contacto.html" class="btn btn-ghost vp-cta" style="justify-content:center">Reservar cita para verlo</a>
               `}
             </div>
 
@@ -145,9 +147,7 @@
     function vpSwitch(src, el) {
       const main = document.getElementById('vpMainImg');
       if (main) main.src = src;
-      const blurBg = document.getElementById('vpMainImgBlur');
-      if (blurBg) blurBg.style.backgroundImage = `url('${src}')`;
-      document.querySelectorAll('.vp-thumb').forEach(t => t.classList.remove('active'));
+document.querySelectorAll('.vp-thumb').forEach(t => t.classList.remove('active'));
       if (el) el.classList.add('active');
       vpIdx = imgs.indexOf(src);
     }

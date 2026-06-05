@@ -30,7 +30,6 @@
     '.map-wrap',
     '.contact-form',
     '.contact-wa',
-    '.sidebar-filters',
   ];
 
   /* Selectores cuyos hijos se encolan con stagger */

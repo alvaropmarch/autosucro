@@ -129,7 +129,7 @@ function renderFooter() {
         <div class="footer-contact-row">${ICONS.pin}<p>Carrer Sueca, 32 — 46400 Cullera (Valencia)</p></div>
         <div class="footer-contact-row">${ICONS.phone}<div><a href="tel:961730361">961 730 361</a><br><a href="tel:646642082">646 642 082</a></div></div>
         <div class="footer-contact-row">${ICONS.whatsapp}<a href="https://wa.me/34646642082" target="_blank">WhatsApp directo</a></div>
-        <div class="footer-contact-row">${ICONS.mail}<a href="mailto:info@autosucro.com">info@autosucro.com</a></div>
+        <div class="footer-contact-row">${ICONS.mail}<a href="mailto:tallervfabra@hotmail.com" style="text-decoration:underline;text-underline-offset:3px">tallervfabra@hotmail.com</a></div>
       </div>
     </div>
     <div class="footer-bottom">
@@ -163,8 +163,7 @@ function renderVehicleCard(vehicle) {
 
   return `
   <a class="vehicle-card${vehicle.sold ? ' sold' : ''}" href="vehiculo.html?id=${vehicle.id}">
-    <div class="vehicle-img" data-imgs='${JSON.stringify(imgs)}'>
-      ${imgSrc ? `<div class="vehicle-img-blur-bg" style="background-image: url('${imgSrc}')"></div>` : ''}
+    <div class="vehicle-img" data-imgs='${JSON.stringify(imgs)}' onmouseleave="vcReset(this)">
       ${imgEl}
       <span class="v-badge v-badge-${vehicle.sold ? 'off' : 'on'}">${vehicle.sold ? 'Vendido' : 'Disponible'}</span>
       ${arrowsHtml}
@@ -189,15 +188,31 @@ function vcStep(e, btn, dir) {
   e.preventDefault(); e.stopPropagation();
   const wrap  = btn.closest('.vehicle-img');
   const img   = wrap.querySelector('.vc-photo');
-  const blur  = wrap.querySelector('.vehicle-img-blur-bg');
   const dots  = wrap.querySelectorAll('.vc-dot');
   const imgs  = JSON.parse(wrap.dataset.imgs);
   const next  = ((parseInt(img.dataset.idx) + dir) + imgs.length) % imgs.length;
-  img.src                        = imgs[next];
-  img.dataset.idx                = next;
-  if (blur) blur.style.backgroundImage = `url('${imgs[next]}')`;
+  img.src         = imgs[next];
+  img.dataset.idx = next;
   dots.forEach((d, i) => d.classList.toggle('vc-dot-on', i === next));
 }
+
+function vcReset(wrap) {
+  const img  = wrap.querySelector('.vc-photo');
+  if (!img || img.dataset.idx === '0') return;
+  const imgs = JSON.parse(wrap.dataset.imgs);
+  img.src         = imgs[0];
+  img.dataset.idx = '0';
+  wrap.querySelectorAll('.vc-dot').forEach((d, i) => d.classList.toggle('vc-dot-on', i === 0));
+}
+
+// Antes de guardar en bfcache, resetear todas las fotos a la primera
+window.addEventListener('pagehide', function () {
+  document.querySelectorAll('[data-imgs]').forEach(vcReset);
+});
+// Respaldo: al restaurar desde bfcache
+window.addEventListener('pageshow', function (e) {
+  if (e.persisted) document.querySelectorAll('[data-imgs]').forEach(vcReset);
+});
 
 /* ── VEHICLE MODAL ── */
 function renderVehicleModal(vehicle) {
@@ -216,7 +231,6 @@ function renderVehicleModal(vehicle) {
   <div class="modal-body">
     <div class="modal-grid">
       <div class="modal-img">
-        ${imgSrc ? `<div class="modal-img-blur-bg" style="background-image: url('${imgSrc}')"></div>` : ''}
         ${imgEl}
       </div>
       <div>
