@@ -119,9 +119,9 @@ function renderFooter() {
       <div>
         <p class="footer-col-title">Legal</p>
         <div class="footer-links">
-          <a href="#">Aviso Legal</a>
-          <a href="#">Política de Cookies</a>
-          <a href="#">Política de Privacidad</a>
+          <a href="aviso-legal.html">Aviso Legal</a>
+          <a href="privacidad.html#cookies">Política de Cookies</a>
+          <a href="privacidad.html">Política de Privacidad</a>
         </div>
       </div>
       <div>
@@ -135,9 +135,9 @@ function renderFooter() {
     <div class="footer-bottom">
       <p class="footer-copy">© ${new Date().getFullYear()} Autosucro. Todos los derechos reservados.</p>
       <div class="footer-legal">
-        <a href="#">Aviso Legal</a>
-        <a href="#">Privacidad</a>
-        <a href="#">Cookies</a>
+        <a href="aviso-legal.html">Aviso Legal</a>
+        <a href="privacidad.html">Privacidad</a>
+        <a href="privacidad.html#cookies">Cookies</a>
       </div>
     </div>
   </footer>
@@ -298,3 +298,22 @@ function closeVehicleModal() {
   const overlay = document.getElementById('vehicleModal');
   if (overlay) { overlay.classList.remove('open'); document.body.style.overflow = ''; }
 }
+
+/* ── COOKIE BANNER ── */
+(function () {
+  if (localStorage.getItem('autosucro_cookies_ok')) return;
+  var banner = document.createElement('div');
+  banner.className = 'cookie-banner';
+  banner.id = 'cookieBanner';
+  banner.innerHTML =
+    '<p>Utilizamos cookies propias y de terceros para mejorar tu experiencia de navegación y analizar el uso del sitio. ' +
+    'Puedes obtener más información en nuestra <a href="privacidad.html#cookies">Política de Cookies</a>.</p>' +
+    '<button class="cookie-banner-btn" id="cookieAccept">Aceptar</button>';
+  document.body.appendChild(banner);
+  setTimeout(function () { banner.classList.add('cb-show'); }, 120);
+  document.getElementById('cookieAccept').addEventListener('click', function () {
+    localStorage.setItem('autosucro_cookies_ok', '1');
+    banner.classList.remove('cb-show');
+    setTimeout(function () { banner.remove(); }, 420);
+  });
+}());

@@ -178,16 +178,13 @@ const DEFAULT_VEHICLES = [
     "iva": "Incluido",
     "highlight": "REVISADO Y CON 1 AÑO DE GARANTIA (TALLER PROPIO)",
     "sold": false,
-    "image": "images/coches/ford-focus/1.jpg",
+    "image": "images/coches/ford-focus/1.png",
     "images": [
-      "images/coches/ford-focus/1.jpg",
-      "images/coches/ford-focus/2.jpg",
-      "images/coches/ford-focus/3.jpg",
-      "images/coches/ford-focus/4.jpg",
-      "images/coches/ford-focus/5.jpg",
-      "images/coches/ford-focus/6.jpg",
-      "images/coches/ford-focus/7.jpg",
-      "images/coches/ford-focus/8.jpg"
+      "images/coches/ford-focus/1.png",
+      "images/coches/ford-focus/2.png",
+      "images/coches/ford-focus/3.png",
+      "images/coches/ford-focus/4.png",
+      "images/coches/ford-focus/5.jpg"
     ]
   },
   {
@@ -536,8 +533,8 @@ const DEFAULT_VEHICLES = [
 ];
 
 const ADMIN_PASSWORD = "Autosucro2024!";
-const STORAGE_KEY = "autosucro_vehicles_v11";
-const OLD_KEY = "autosucro_vehicles_v10";
+const STORAGE_KEY = "autosucro_vehicles_v12";
+const OLD_KEY = "autosucro_vehicles_v11";
 const SESSION_KEY = "autosucro_admin_session";
 
 function getVehicles() {

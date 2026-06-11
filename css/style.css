@@ -1094,3 +1094,56 @@ table.data-table tr:hover td { background: var(--bg); }
   .admin-stats-row { grid-template-columns: repeat(2,1fr); }
   .login-box { padding: 32px 24px; border-radius: var(--r-lg); }
 }
+
+/* ── Legal pages ─────────────────────────────────────────────── */
+.legal-prose { max-width: 800px; }
+.legal-section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--brand);
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--line);
+}
+.legal-prose h2 { font-size: 17px; font-weight: 700; color: var(--text); margin: 32px 0 12px; }
+.legal-prose p  { font-size: 14.5px; line-height: 1.8; color: var(--text); margin-bottom: 12px; }
+.legal-prose ul { margin: 8px 0 14px 20px; }
+.legal-prose ul li { font-size: 14.5px; line-height: 1.8; margin-bottom: 8px; }
+.legal-prose a  { color: var(--brand); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ── Cookie banner ───────────────────────────────────────────── */
+.cookie-banner {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 9999;
+  background: var(--brand);
+  color: var(--white);
+  padding: 16px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+  transform: translateY(110%);
+  transition: transform 0.4s cubic-bezier(.22,.61,.36,1);
+}
+.cookie-banner.cb-show { transform: translateY(0); }
+.cookie-banner p  { font-size: 13.5px; line-height: 1.5; flex: 1; margin: 0; }
+.cookie-banner a  { color: var(--white); text-decoration: underline; text-underline-offset: 3px; }
+.cookie-banner-btn {
+  background: var(--white);
+  color: var(--brand);
+  border: none;
+  padding: 10px 24px;
+  border-radius: var(--r-xl);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background var(--t);
+}
+.cookie-banner-btn:hover { background: #ececec; }
+@media (max-width: 768px) {
+  .cookie-banner { padding: 16px 20px; flex-direction: column; align-items: flex-start; gap: 14px; }
+  .cookie-banner-btn { width: 100%; text-align: center; padding: 12px 24px; }
+}
