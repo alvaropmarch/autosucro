@@ -1,0 +1,4 @@
+# Proteger ficheros sensibles de la API
+<FilesMatch "^(config\.php|seed\.json|wp-config\.php)$">
+  Require all denied
+</FilesMatch>

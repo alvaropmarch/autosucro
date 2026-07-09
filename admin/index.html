@@ -237,7 +237,7 @@
   function showAdmin() {
     document.getElementById('loginPage').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
-    renderDashboard();
+    loadVehicles().then(renderDashboard);
   }
 
   function showSection(name) {
@@ -306,19 +306,32 @@
       </tbody>`;
   }
 
+  function rerenderActive() {
+    const inVehicles = document.getElementById('sectionVehicles').style.display !== 'none';
+    if (inVehicles) renderVehiclesTable(); else renderDashboard();
+  }
+
+  // Guarda en la base de datos; si falla, avisa y recarga desde el servidor.
+  function commit(vehicles) {
+    return saveVehicles(vehicles).catch(err => {
+      alert('No se pudo guardar en el servidor: ' + (err && err.message ? err.message : err));
+      return loadVehicles().then(rerenderActive);
+    });
+  }
+
   function toggleSold(id) {
     const vehicles = getVehicles();
     const v = vehicles.find(v=>v.id===id);
-    if (v) { v.sold = !v.sold; saveVehicles(vehicles); }
-    const activeSection = document.getElementById('sectionVehicles').style.display !== 'none' ? 'vehicles' : 'dashboard';
-    if (activeSection === 'vehicles') renderVehiclesTable(); else renderDashboard();
+    if (!v) return;
+    v.sold = !v.sold;
+    commit(vehicles);
+    rerenderActive();
   }
 
   function deleteVehicle(id) {
     if (!confirm('¿Eliminar este vehículo?')) return;
-    saveVehicles(getVehicles().filter(v=>v.id!==id));
-    const activeSection = document.getElementById('sectionVehicles').style.display !== 'none' ? 'vehicles' : 'dashboard';
-    if (activeSection === 'vehicles') renderVehiclesTable(); else renderDashboard();
+    commit(getVehicles().filter(v=>v.id!==id));
+    rerenderActive();
   }
 
   function editVehicle(id) {
@@ -371,8 +384,9 @@
       data.sold = false;
       vehicles.push(data);
     }
-    saveVehicles(vehicles);
-    showSection('vehicles');
+    saveVehicles(vehicles)
+      .then(() => showSection('vehicles'))
+      .catch(err => alert('No se pudo guardar el vehículo: ' + (err && err.message ? err.message : err)));
   }
 
   function handleImageUpload(input) {

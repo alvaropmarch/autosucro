@@ -145,6 +145,21 @@ function renderFooter() {
 }
 
 /* ── VEHICLE CARD ── */
+// Estado del vehículo: soporta `status` ('disponible'|'reservado'|'vendido'),
+// o los booleanos legados `sold` / `reserved`.
+function vehicleStatus(v) {
+  const s = v.status ? String(v.status).toLowerCase()
+          : v.sold ? 'vendido'
+          : v.reserved ? 'reservado'
+          : 'disponible';
+  const map = {
+    disponible: { key: 'disponible', label: 'Disponible', badge: 'on' },
+    reservado:  { key: 'reservado',  label: 'Reservado',  badge: 'reserved' },
+    vendido:    { key: 'vendido',    label: 'Vendido',    badge: 'off' },
+  };
+  return map[s] || map.disponible;
+}
+
 function renderVehicleCard(vehicle) {
   const imgs   = (vehicle.images && vehicle.images.length) ? vehicle.images : (vehicle.image ? [vehicle.image] : []);
   const imgSrc = imgs[0] || '';
@@ -161,11 +176,18 @@ function renderVehicleCard(vehicle) {
        <button class="vc-arrow vc-next" onclick="vcStep(event,this,1)"  aria-label="Siguiente">&#8250;</button>`
     : '';
 
+  const st = vehicleStatus(vehicle);
+  const stateCls = st.key === 'vendido' ? ' sold' : st.key === 'reservado' ? ' reserved' : '';
+  const ribbonHtml = (st.key === 'vendido' || st.key === 'reservado')
+    ? `<span class="vc-ribbon vc-ribbon-${st.key}"><span class="vc-ribbon-txt">${st.label}</span></span>`
+    : '';
+
   return `
-  <a class="vehicle-card${vehicle.sold ? ' sold' : ''}" href="vehiculo.html?id=${vehicle.id}">
+  <a class="vehicle-card${stateCls}" href="vehiculo.html?id=${vehicle.id}">
     <div class="vehicle-img" data-imgs='${JSON.stringify(imgs)}' onmouseleave="vcReset(this)">
       ${imgEl}
-      <span class="v-badge v-badge-${vehicle.sold ? 'off' : 'on'}">${vehicle.sold ? 'Vendido' : 'Disponible'}</span>
+      <span class="v-badge v-badge-${st.badge}">${st.label}</span>
+      ${ribbonHtml}
       ${arrowsHtml}
       ${dotsHtml}
     </div>

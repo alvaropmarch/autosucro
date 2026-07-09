@@ -1,2 +1,5 @@
 .DS_Store
 **/.DS_Store
+
+# Credenciales de la API (viven solo en el servidor, generadas por el instalador)
+api/config.php

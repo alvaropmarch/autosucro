@@ -45,6 +45,7 @@
           <div class="sf-chips" id="chipsStatus">
             <button class="sf-chip sf-chip-active" data-val="">Todos</button>
             <button class="sf-chip" data-val="available">Disponibles</button>
+            <button class="sf-chip" data-val="reserved">Reservados</button>
             <button class="sf-chip" data-val="sold">Vendidos</button>
           </div>
         </div>
@@ -152,23 +153,26 @@
   setupChipGroup('chipsTransmission', 'transmission');
   setupChipGroup('chipsBrand',        'brand');
 
-  // ── Marcas: generar chips dinámicamente ─────────────────────────
-  var todasMarcas = [...new Set(getVehicles().map(function(v){ return v.brand; }))].sort();
-  var brandContainer = document.getElementById('chipsBrand');
-  var todosBtn = document.createElement('button');
-  todosBtn.type = 'button';
-  todosBtn.className = 'sf-chip sf-chip-active';
-  todosBtn.dataset.val = '';
-  todosBtn.textContent = 'Todos';
-  brandContainer.appendChild(todosBtn);
-  todasMarcas.forEach(function(b) {
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'sf-chip';
-    btn.dataset.val = b;
-    btn.textContent = b;
-    brandContainer.appendChild(btn);
-  });
+  // ── Marcas: generar chips dinámicamente (tras cargar de la API) ──
+  function buildBrandChips() {
+    var brandContainer = document.getElementById('chipsBrand');
+    brandContainer.innerHTML = '';
+    var todasMarcas = [...new Set(getVehicles().map(function(v){ return v.brand; }))].sort();
+    var todosBtn = document.createElement('button');
+    todosBtn.type = 'button';
+    todosBtn.className = 'sf-chip sf-chip-active';
+    todosBtn.dataset.val = '';
+    todosBtn.textContent = 'Todos';
+    brandContainer.appendChild(todosBtn);
+    todasMarcas.forEach(function(b) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'sf-chip';
+      btn.dataset.val = b;
+      btn.textContent = b;
+      brandContainer.appendChild(btn);
+    });
+  }
 
   // ── Buscador ─────────────────────────────────────────────────────
   var searchInput = document.getElementById('searchInput');
@@ -230,8 +234,12 @@
       if (state.fuel         && v.fuel         !== state.fuel)         return false;
       if (state.transmission && v.transmission !== state.transmission) return false;
       if (state.maxPrice < Infinity && v.price > state.maxPrice)       return false;
-      if (state.status === 'available' && v.sold)  return false;
-      if (state.status === 'sold'      && !v.sold) return false;
+      if (state.status) {
+        var vst = vehicleStatus(v).key;
+        if (state.status === 'available' && vst !== 'disponible') return false;
+        if (state.status === 'reserved'  && vst !== 'reservado')  return false;
+        if (state.status === 'sold'      && vst !== 'vendido')    return false;
+      }
       return true;
     });
 
@@ -250,7 +258,11 @@
     if (primeraVez) { primeraVez = false; if (window.animRefresh) window.animRefresh(); }
   }
 
-  aplicarFiltros();
+  // Cargar de la base de datos y luego pintar
+  loadVehicles().then(function () {
+    buildBrandChips();
+    aplicarFiltros();
+  });
 </script>
 <script src="js/animations.js"></script>
 </body>

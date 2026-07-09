@@ -303,7 +303,8 @@
   document.getElementById('footer-container').innerHTML = renderFooter();
   initMobileNav();
 
-  const vehicles = getVehicles().filter(v => !v.sold);
+  loadVehicles().then(() => {
+  const vehicles = getVehicles();
   const ticker = document.getElementById('homeTicker');
   if (vehicles.length) {
     const cards = vehicles.map(v => renderVehicleCard(v)).join('');
@@ -357,6 +358,7 @@
     }, { passive: true });
     ticker.addEventListener('touchend', scheduleResume);
   })();
+  });
 </script>
 <script>
   (function () {

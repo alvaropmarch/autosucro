@@ -537,25 +537,46 @@ const STORAGE_KEY = "autosucro_vehicles_v12";
 const OLD_KEY = "autosucro_vehicles_v11";
 const SESSION_KEY = "autosucro_admin_session";
 
-function getVehicles() {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) return JSON.parse(stored);
+// ── Base de datos real (MySQL vía API PHP) ──────────────────────────
+// La web lee de /api/vehiculos.php; el admin escribe (POST con contraseña).
+// DEFAULT_VEHICLES queda solo como fallback si la API no responde.
+const API_URL = '/api/vehiculos.php';
+let _vehiclesCache = null;
 
-  // Primera carga con la nueva clave: cargar datos limpios y preservar "vendido" del almacenamiento anterior
-  const vehicles = JSON.parse(JSON.stringify(DEFAULT_VEHICLES));
-  const oldData = localStorage.getItem(OLD_KEY);
-  if (oldData) {
-    const oldVehicles = JSON.parse(oldData);
-    const soldMap = {};
-    oldVehicles.forEach(v => { soldMap[v.id] = v.sold; });
-    vehicles.forEach(v => { if (soldMap[v.id]) v.sold = true; });
+// Carga los coches desde la API y los cachea. Llamar (con await) antes de renderizar.
+async function loadVehicles() {
+  try {
+    const res = await fetch(API_URL, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error('formato inesperado');
+    _vehiclesCache = data;
+  } catch (e) {
+    console.warn('[autosucro] API no disponible, usando datos por defecto:', e.message);
+    if (!_vehiclesCache) _vehiclesCache = JSON.parse(JSON.stringify(DEFAULT_VEHICLES));
   }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(vehicles));
-  return vehicles;
+  return _vehiclesCache;
 }
 
-function saveVehicles(vehicles) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(vehicles));
+// Accesor síncrono: devuelve la caché ya cargada (o el fallback si aún no se cargó).
+function getVehicles() {
+  return _vehiclesCache || DEFAULT_VEHICLES;
+}
+
+// Guarda todo el stock en la base de datos. Requiere la contraseña de admin.
+async function saveVehicles(vehicles) {
+  _vehiclesCache = vehicles; // actualización local optimista
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password: ADMIN_PASSWORD, vehicles })
+  });
+  if (!res.ok) {
+    let msg = 'HTTP ' + res.status;
+    try { const j = await res.json(); if (j && j.error) msg = j.error; } catch (_) {}
+    throw new Error(msg);
+  }
+  return res.json();
 }
 
 function getNextId() {
