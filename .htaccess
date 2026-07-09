@@ -43,15 +43,32 @@ DirectoryIndex index.html
 # Página de error 404 amigable (usa la home; cámbialo si creas una 404.html)
 ErrorDocument 404 /index.html
 
-# ===== Caché del navegador para assets estáticos =====
+# ===== Caché del navegador =====
+# mod_headers es respetado por LiteSpeed (mod_expires aquí no lo era).
+<IfModule mod_headers.c>
+  # HTML: nunca servir de caché sin revalidar (los cambios se ven al instante)
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate, max-age=0"
+  </FilesMatch>
+  # CSS/JS: caché corta (además van versionados con ?v= en el HTML)
+  <FilesMatch "\.(css|js)$">
+    Header set Cache-Control "public, max-age=3600"
+  </FilesMatch>
+  # Imágenes y fuentes: caché larga (no cambian de contenido)
+  <FilesMatch "\.(jpe?g|png|webp|svg|ico|woff2?|ttf)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+</IfModule>
+
+# Fallback si mod_headers no estuviera disponible
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresByType image/jpeg        "access plus 1 month"
   ExpiresByType image/png         "access plus 1 month"
   ExpiresByType image/webp        "access plus 1 month"
   ExpiresByType image/svg+xml     "access plus 1 month"
-  ExpiresByType text/css          "access plus 1 week"
-  ExpiresByType application/javascript "access plus 1 week"
+  ExpiresByType text/css          "access plus 1 hour"
+  ExpiresByType application/javascript "access plus 1 hour"
   ExpiresByType text/html         "access plus 0 seconds"
 </IfModule>
 
