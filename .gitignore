@@ -3,3 +3,6 @@
 
 # Credenciales de la API (viven solo en el servidor, generadas por el instalador)
 api/config.php
+
+# Token de purga (solo en servidor)
+api/purge.key
