@@ -46,7 +46,7 @@ jobs:
         run: |
           echo "Purgando caché dinámica..."
           code=$(curl -s -o /tmp/purge.json -w "%{http_code}" --max-time 30 \
-            "https://autosucro.es/api/purge.php?key=${{ secrets.PURGE_TOKEN }}")
+            "https://autosucro.es/api/purge.php?key=${{ secrets.PURGE_TOKEN }}&cb=${{ github.run_id }}")
           echo "HTTP $code"; cat /tmp/purge.json || true
           if [ "$code" != "200" ]; then
             echo "::warning::La purga de caché devolvió $code (el deploy sí se completó)"

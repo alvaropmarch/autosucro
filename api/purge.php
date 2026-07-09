@@ -3,6 +3,7 @@
 // Se llama desde el workflow: /api/purge.php?key=<token>
 // El token vive en purge.key (fuera de git). Purgar solo vacía caché -> bajo riesgo.
 header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-store, no-cache, must-revalidate');
 
 $keyFile  = __DIR__ . '/purge.key';
 $expected = is_file($keyFile) ? trim(file_get_contents($keyFile)) : '';
