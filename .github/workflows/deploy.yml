@@ -1,0 +1,43 @@
+name: Deploy a autosucro.es (FTP)
+
+# Despliega automáticamente el site al hosting compartido cada vez que
+# se hace push / merge a la rama main.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}   # permite lanzarlo a mano desde la pestaña Actions
+
+concurrency:
+  group: deploy-produccion
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sincronizar por FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          protocol: ftps          # TLS explícito sobre el puerto 21
+          security: loose          # el cert del host no casa con el hostname -> cifra sin validar
+          local-dir: ./
+          server-dir: ./autosucro.es/public_html/
+          # Ficheros que NO forman parte del site publicado
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.github/**
+            **/.claude/**
+            **/.DS_Store
+            **/node_modules/**
+            Recursos/**
+            deploy/**
+            serve.json
+            .gitignore
