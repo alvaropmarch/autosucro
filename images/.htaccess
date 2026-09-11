@@ -1,0 +1,5 @@
+# Aquí solo hay fotos (incluidas las que sube el admin por api/upload.php).
+# Nunca debe servirse ni ejecutarse código desde esta carpeta.
+<FilesMatch "\.(php|phtml|php[0-9]|phps|phar|cgi|pl|py|sh|htaccess|htpasswd)$">
+  Require all denied
+</FilesMatch>

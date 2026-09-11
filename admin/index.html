@@ -70,6 +70,11 @@
           <span id="adminDate" style="font-size:13px;color:var(--muted)"></span>
         </div>
         <div class="admin-stats-row" id="adminStats"></div>
+        <div id="avisoFotos" style="display:none;border:1.5px solid #E0A93A;background:#FDF6E7;border-radius:var(--r-md);padding:16px 18px;margin-bottom:20px">
+          <p style="margin:0 0 6px;font-size:14px;font-weight:600">Hay fotos guardadas dentro de la base de datos</p>
+          <p id="avisoFotosTexto" style="margin:0 0 12px;font-size:13px;color:var(--muted);line-height:1.5"></p>
+          <button class="btn btn-dark btn-sm" id="btnMigrarFotos" onclick="migrarFotosIncrustadas()">Convertir a ficheros</button>
+        </div>
         <div class="table-wrap">
           <div class="table-head">
             <p class="table-head-title">Stock reciente</p>
@@ -179,24 +184,21 @@
               </div>
             </div>
             <div class="form-group" style="margin-bottom:14px">
-              <label class="form-label">Imagen del vehículo</label>
+              <label class="form-label">Fotos del vehículo</label>
               <input type="hidden" id="fImage">
               <div id="imageUploadArea" onclick="document.getElementById('fImageFile').click()"
-                style="border:2px dashed var(--border);border-radius:var(--r-md);padding:20px;text-align:center;cursor:pointer;transition:border-color .2s;position:relative;overflow:hidden;min-height:110px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px">
-                <img id="imagePreview" src="" alt="" style="display:none;max-height:140px;max-width:100%;border-radius:var(--r-sm);object-fit:cover">
-                <div id="imageUploadPlaceholder" style="display:flex;flex-direction:column;align-items:center">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 6px"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                  <p style="font-size:13px;color:var(--muted);margin:0">Haz clic para subir una foto</p>
-                  <p style="font-size:11px;color:var(--muted);opacity:.6;margin:2px 0 0">JPG, PNG, WEBP — máx. 5 MB</p>
-                </div>
-                <button type="button" id="imageRemoveBtn" onclick="event.stopPropagation();removeImage()"
-                  style="display:none;position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.55);border:none;color:white;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:14px;line-height:1;padding:0">✕</button>
+                style="border:2px dashed var(--border);border-radius:var(--r-md);padding:20px;text-align:center;cursor:pointer;transition:border-color .2s;min-height:110px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <p style="font-size:13px;color:var(--muted);margin:0">Haz clic para subir fotos</p>
+                <p style="font-size:11px;color:var(--muted);opacity:.6;margin:2px 0 0">Puedes elegir varias a la vez — JPG, PNG o WEBP, máx. 15 MB cada una</p>
               </div>
-              <input type="file" id="fImageFile" accept="image/*" style="display:none" onchange="handleImageUpload(this)">
+              <p id="imageStatus" style="display:none;font-size:13px;color:var(--brand);margin:10px 0 0"></p>
+              <div id="imageGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px;margin-top:12px"></div>
+              <input type="file" id="fImageFile" accept="image/*" multiple style="display:none" onchange="handleImageUpload(this)">
             </div>
             <div class="form-group" style="margin-bottom:28px">
               <label class="form-label">Texto destacado</label>
-              <input type="text" class="form-input" id="fHighlight" value="REVISADO Y CON 1 AÑO DE GARANTIA (TALLER PROPIO)">
+              <textarea class="form-input form-textarea" id="fHighlight" rows="4" placeholder="Describe el vehículo: equipamiento, garantía, estado...">REVISADO Y CON 1 AÑO DE GARANTIA (TALLER PROPIO)</textarea>
             </div>
             <div style="display:flex;gap:10px">
               <button type="submit" class="btn btn-dark">Guardar vehículo</button>
@@ -255,7 +257,7 @@
       document.getElementById('editId').value = '';
       document.getElementById('fHighlight').value = 'REVISADO Y CON 1 AÑO DE GARANTIA (TALLER PROPIO)';
       document.getElementById('formTitle').textContent = 'Añadir vehículo';
-      removeImage();
+      clearImages();
     }
   }
 
@@ -269,6 +271,7 @@
       <div class="admin-stat"><p class="admin-stat-num" style="color:#B83232">${sold}</p><p class="admin-stat-label">Vendidos</p></div>
       <div class="admin-stat"><p class="admin-stat-num" style="font-size:22px">${formatPrice(value)}</p><p class="admin-stat-label">Valor en stock</p></div>`;
     renderTable(document.getElementById('dashboardTable'), vehicles.slice(0,10));
+    revisarFotosIncrustadas();
   }
 
   function renderVehiclesTable(filter='') {
@@ -352,7 +355,8 @@
     document.getElementById('fCondition').value = v.condition;
     document.getElementById('fPrice').value = v.price;
     document.getElementById('fIva').value = v.iva;
-    setImagePreview(v.image || '');
+    formImages = (v.images && v.images.length) ? v.images.slice() : (v.image ? [v.image] : []);
+    renderImageGrid();
     document.getElementById('fHighlight').value = v.highlight || '';
   }
 
@@ -372,7 +376,8 @@
       condition: document.getElementById('fCondition').value,
       price: parseInt(document.getElementById('fPrice').value),
       iva: document.getElementById('fIva').value,
-      image: document.getElementById('fImage').value,
+      image: formImages[0] || '',
+      images: formImages.slice(),
       highlight: document.getElementById('fHighlight').value,
     };
     const vehicles = getVehicles();
@@ -389,39 +394,178 @@
       .catch(err => alert('No se pudo guardar el vehículo: ' + (err && err.message ? err.message : err)));
   }
 
-  function handleImageUpload(input) {
-    const file = input.files[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { alert('La imagen no puede superar 5 MB.'); input.value = ''; return; }
-    const reader = new FileReader();
-    reader.onload = e => setImagePreview(e.target.result);
-    reader.readAsDataURL(file);
+  // ── Fotos del vehículo ───────────────────────────────────────────────
+  // Se suben a api/upload.php, que las guarda como ficheros reales y devuelve
+  // la ruta. En la base de datos solo viajan rutas, nunca la imagen en base64:
+  // así el JSON de la API se mantiene pequeño y el navegador cachea las fotos.
+  let formImages = [];
+
+  function slugActual() {
+    const marca  = document.getElementById('fBrand').value.trim();
+    const modelo = document.getElementById('fModel').value.trim();
+    return (marca + ' ' + modelo).trim() || 'varios';
   }
 
-  function setImagePreview(src) {
-    document.getElementById('fImage').value = src;
-    const preview = document.getElementById('imagePreview');
-    const placeholder = document.getElementById('imageUploadPlaceholder');
-    const removeBtn = document.getElementById('imageRemoveBtn');
-    if (src) {
-      preview.src = src;
-      preview.style.display = 'block';
-      placeholder.style.display = 'none';
-      removeBtn.style.display = 'block';
-      document.getElementById('imageUploadArea').style.border = '2px solid var(--brand)';
-    } else {
-      removeImage();
-    }
-  }
-
-  function removeImage() {
-    document.getElementById('fImage').value = '';
+  function clearImages() {
+    formImages = [];
     document.getElementById('fImageFile').value = '';
-    document.getElementById('imagePreview').src = '';
-    document.getElementById('imagePreview').style.display = 'none';
-    document.getElementById('imageUploadPlaceholder').style.display = 'flex';
-    document.getElementById('imageRemoveBtn').style.display = 'none';
-    document.getElementById('imageUploadArea').style.border = '2px dashed var(--border)';
+    renderImageGrid();
+  }
+
+  // En la BD las rutas se guardan relativas ("images/coches/..."), como siempre.
+  // Pero el admin cuelga de /admin/, así que para MOSTRARLAS hay que anteponer "/".
+  function urlFoto(src) {
+    if (!src) return '';
+    if (src.slice(0, 5) === 'data:' || src.slice(0, 4) === 'http' || src[0] === '/') return src;
+    return '/' + src;
+  }
+
+  const BTN_FOTO = 'background:rgba(0,0,0,.5);border:none;color:#fff;cursor:pointer;padding:3px 0;flex:1;font-size:12px;line-height:1';
+
+  function renderImageGrid() {
+    // La portada es siempre la primera: la ficha pública usa images[0] como principal.
+    document.getElementById('fImage').value = formImages[0] || '';
+    document.getElementById('imageGrid').innerHTML = formImages.map((src, i) => `
+      <div style="position:relative;border-radius:var(--r-sm);overflow:hidden;border:1.5px solid ${i === 0 ? 'var(--brand)' : 'var(--line)'};aspect-ratio:4/3;background:#f2f2f2">
+        <img src="${urlFoto(src)}" alt="Foto ${i + 1}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block">
+        ${i === 0 ? '<span style="position:absolute;top:4px;left:4px;background:var(--brand);color:#fff;font-size:9px;letter-spacing:.5px;padding:2px 6px;border-radius:3px">PORTADA</span>' : ''}
+        <button type="button" title="Quitar foto" onclick="quitarFoto(${i})"
+          style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,.55);border:none;color:#fff;border-radius:50%;width:22px;height:22px;cursor:pointer;font-size:12px;line-height:1;padding:0">✕</button>
+        <div style="position:absolute;bottom:0;left:0;right:0;display:flex">
+          <button type="button" title="Mover antes" onclick="moverFoto(${i},-1)" ${i === 0 ? 'disabled' : ''} style="${BTN_FOTO};opacity:${i === 0 ? '.3' : '1'}">◀</button>
+          <button type="button" title="Mover después" onclick="moverFoto(${i},1)" ${i === formImages.length - 1 ? 'disabled' : ''} style="${BTN_FOTO};opacity:${i === formImages.length - 1 ? '.3' : '1'}">▶</button>
+        </div>
+      </div>`).join('');
+    document.getElementById('imageUploadArea').style.border =
+      formImages.length ? '2px solid var(--brand)' : '2px dashed var(--border)';
+  }
+
+  function quitarFoto(i) {
+    formImages.splice(i, 1);
+    renderImageGrid();
+  }
+
+  function moverFoto(i, delta) {
+    const j = i + delta;
+    if (j < 0 || j >= formImages.length) return;
+    const tmp = formImages[i];
+    formImages[i] = formImages[j];
+    formImages[j] = tmp;
+    renderImageGrid();
+  }
+
+  async function subirFoto(file, slug) {
+    const fd = new FormData();
+    fd.append('password', ADMIN_PASSWORD);
+    fd.append('slug', slug);
+    fd.append('photo', file);
+    const res = await fetch('/api/upload.php', { method: 'POST', body: fd });
+    let body = null;
+    try { body = await res.json(); } catch (_) {}
+    if (!res.ok || !body || !body.ok) {
+      throw new Error(body && body.error ? body.error : 'HTTP ' + res.status);
+    }
+    return body.path;
+  }
+
+  // Sube de una en una para poder mostrar el progreso y no chocar con el
+  // límite de tamaño por petición del servidor.
+  // ── Fotos heredadas incrustadas en la base de datos ──────────────────
+  // Antes el admin guardaba la foto como texto base64 dentro del propio JSON,
+  // que la web descarga entero en cada visita. Esto las pasa a ficheros reales.
+  function esIncrustada(src) {
+    return typeof src === 'string' && src.slice(0, 5) === 'data:';
+  }
+
+  function contarFotosIncrustadas() {
+    let fotos = 0, coches = 0, bytes = 0;
+    getVehicles().forEach(v => {
+      const srcs = (v.images && v.images.length ? v.images : (v.image ? [v.image] : [])).filter(esIncrustada);
+      if (srcs.length) { coches++; fotos += srcs.length; bytes += srcs.reduce((n, s) => n + s.length, 0); }
+    });
+    return { fotos, coches, bytes };
+  }
+
+  function revisarFotosIncrustadas() {
+    const { fotos, coches, bytes } = contarFotosIncrustadas();
+    const aviso = document.getElementById('avisoFotos');
+    if (!fotos) { aviso.style.display = 'none'; return; }
+    const mb = (bytes / 1048576).toFixed(1).replace('.', ',');
+    document.getElementById('avisoFotosTexto').textContent =
+      `${fotos} foto${fotos > 1 ? 's' : ''} de ${coches} vehículo${coches > 1 ? 's' : ''} ` +
+      `${fotos > 1 ? 'ocupan' : 'ocupa'} ${mb} MB dentro de la base de datos, ` +
+      'y eso se descarga entero cada vez que alguien entra en la web. Convertirlas a ficheros hace la web mucho más rápida. ' +
+      'No cambia nada de lo que se ve.';
+    aviso.style.display = 'block';
+  }
+
+  async function migrarFotosIncrustadas() {
+    const { fotos } = contarFotosIncrustadas();
+    if (!fotos || !confirm(`Se van a convertir ${fotos} foto(s) a ficheros. ¿Continuar?`)) return;
+
+    const btn = document.getElementById('btnMigrarFotos');
+    btn.disabled = true;
+    const vehicles = getVehicles();
+    let hechas = 0;
+    const fallos = [];
+
+    for (const v of vehicles) {
+      let srcs = v.images && v.images.length ? v.images.slice() : (v.image ? [v.image] : []);
+      if (!srcs.some(esIncrustada)) continue;
+      const slug = (v.brand + ' ' + v.model).trim() || 'varios';
+
+      for (let i = 0; i < srcs.length; i++) {
+        if (!esIncrustada(srcs[i])) continue;
+        btn.textContent = `Convirtiendo ${hechas + 1} de ${fotos}…`;
+        try {
+          const blob = await (await fetch(srcs[i])).blob();
+          const file = new File([blob], 'foto.jpg', { type: blob.type || 'image/jpeg' });
+          srcs[i] = await subirFoto(file, slug);
+          hechas++;
+        } catch (e) {
+          fallos.push(`${v.brand} ${v.model}: ${e.message}`);
+        }
+      }
+      v.images = srcs;
+      v.image = srcs[0] || '';
+    }
+
+    btn.textContent = 'Guardando…';
+    try {
+      await saveVehicles(vehicles);
+    } catch (e) {
+      alert('Se convirtieron las fotos pero no se pudo guardar: ' + e.message);
+    }
+    btn.disabled = false;
+    btn.textContent = 'Convertir a ficheros';
+    renderDashboard();
+    if (fallos.length) alert('No se pudieron convertir:\n\n' + fallos.join('\n'));
+    else alert(`Listo: ${hechas} foto(s) convertidas a ficheros.`);
+  }
+
+  async function handleImageUpload(input) {
+    const files = Array.from(input.files || []);
+    input.value = '';
+    if (!files.length) return;
+
+    const status = document.getElementById('imageStatus');
+    const slug = slugActual();
+    const fallos = [];
+    status.style.display = 'block';
+
+    for (let i = 0; i < files.length; i++) {
+      status.textContent = `Subiendo foto ${i + 1} de ${files.length}…`;
+      try {
+        formImages.push(await subirFoto(files[i], slug));
+        renderImageGrid();
+      } catch (e) {
+        fallos.push(files[i].name + ': ' + e.message);
+      }
+    }
+
+    status.style.display = 'none';
+    status.textContent = '';
+    if (fallos.length) alert('No se pudieron subir estas fotos:\n\n' + fallos.join('\n'));
   }
 </script>
 </body>
